@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cold Email Writer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 100vw;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 0px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+        
+        .input-section, .output-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e0e6ed;
+        }
+        
+        .section-title {
+            color: #2c3e50;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .icon {
+            width: 24px;
+            height: 24px;
+            fill: #667eea;
+        }
+        
+        label {
+            display: block;
+            color: #34495e;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        textarea, input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e6ed;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            resize: vertical;
+        }
+        
+        textarea:focus, input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        textarea {
+            min-height: 120px;
+            max-height: 300px;
+        }
+
+        #linkedinData {
+            min-height: 150px;
+            max-height: 250px;
+        }
+
+        #extraNotes {
+            min-height: 100px;
+            max-height: 200px;
+        }
+
+        #customPrompt {
+            min-height: 80px;
+            max-height: 150px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            flex: 1;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #6c757d;
+            border: 2px solid #e9ecef;
+        }
+        
+        .btn-secondary:hover {
+            background: #e9ecef;
+            color: #495057;
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .output-content {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 200px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #2c3e50;
+        }
+        
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e9ecef;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .example-data {
+            background: #e8f4f8;
+            border: 1px solid #bee5eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #0c5460;
+        }
+        
+        .example-data h4 {
+            margin-bottom: 10px;
+            color: #0a4a54;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+        iframe {
+    height: 280px !important;
+}
+    </style>
+</head>
+<body>
+    
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Cold Email Writer</h1>
+            <p>Generate personalized cold emails from LinkedIn data</p>
+        </div>
+<iframe src="testspeed.html" width="100%" height="800"></iframe>
+
+        <div class="main-content">
+            <div class="input-section">
+                <h2 class="section-title">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                    </svg>
+                    LinkedIn Data Input
+                </h2>
+                
+                <form id="emailForm">
+                    <div class="form-group">
+                        <label for="linkedinData">Enter LinkedIn Profile Information:</label>
+                        <textarea 
+                            id="linkedinData" 
+                            placeholder="Enter the LinkedIn profile data here...&#10;&#10;Example:&#10;Name: John Smith&#10;Role: Marketing Director at TechCorp&#10;Recent Post: Discussed scaling challenges&#10;Company: SaaS startup with 50+ employees&#10;Website: techcorp.com"
+                            required
+                        ></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="extraNotes">Additional Notes (Optional):</label>
+                        <textarea 
+                            id="extraNotes" 
+                            placeholder="Add any extra context or specific points you want included in the email...&#10;&#10;Examples:&#10;• Mention a specific service (e.g., 'Focus on mobile optimization')&#10;• Reference a mutual connection&#10;• Highlight a particular pain point&#10;• Add urgency or timing context&#10;• Specify tone preferences"
+                            rows="4"
+                        ></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="customPrompt">Custom Instructions (Optional):</label>
+                        <textarea 
+                            id="customPrompt" 
+                            placeholder="Add custom instructions for the AI to follow when generating the email...&#10;&#10;Examples:&#10;• 'Write in a more formal tone'&#10;• 'Keep it under 4 sentences'&#10;• 'Focus on cost savings rather than performance'&#10;• 'Mention our recent case study with similar company'&#10;• 'Use a more direct sales approach'&#10;• 'Include a specific call-to-action for a demo'"
+                            rows="3"
+                        ></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="senderName">Your Name (Optional):</label>
+                        <input 
+                            type="text" 
+                            id="senderName" 
+                            placeholder="Enter your name (defaults to 'Wahab')"
+                        >
+                    </div>
+                    
+                    <div class="button-group">
+                        <button type="submit" class="btn btn-primary" id="generateBtn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12,2A2,2 0 0,1 14,4C14,4.74 13.6,5.39 13,5.73V7H14A7,7 0 0,1 21,14H22A1,1 0 0,1 23,15V18A1,1 0 0,1 22,19H21V20A2,2 0 0,1 19,22H5A2,2 0 0,1 3,20V19H2A1,1 0 0,1 1,18V15A1,1 0 0,1 2,14H3A7,7 0 0,1 10,7H11V5.73C10.4,5.39 10,4.74 10,4A2,2 0 0,1 12,2M7.5,13A2.5,2.5 0 0,0 5,15.5A2.5,2.5 0 0,0 7.5,18A2.5,2.5 0 0,0 10,15.5A2.5,2.5 0 0,0 7.5,13M16.5,13A2.5,2.5 0 0,0 14,15.5A2.5,2.5 0 0,0 16.5,18A2.5,2.5 0 0,0 19,15.5A2.5,2.5 0 0,0 16.5,13Z"/>
+                            </svg>
+                            Generate Email
+                        </button>
+                        <!-- <button type="button" class="btn btn-secondary" id="loadExampleBtn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M19,5V19H5V5H19Z"/>
+                            </svg>
+                            Load Example
+                        </button> -->
+                    </div>
+                </form>
+                
+                <div class="example-data">
+                    <h4>💡 Example Format:</h4>
+                    <code>
+Name: Sarah Chen<br>
+Role: E-commerce Director at StyleHub<br>
+Recent Post: Posted about mobile commerce trends<br>
+Company: Fashion retailer, 100+ employees<br>
+Website: stylehub.com<br>
+Industry: Fashion/E-commerce
+                    </code>
+                </div>
+            </div>
+            
+            <div class="output-section">
+                <h2 class="section-title">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M20,8L12,13L4,8V6L12,11L20,6M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4Z"/>
+                    </svg>
+                    Generated Email
+                </h2>
+                
+                <div id="outputContent" class="output-content">
+                    Click "Generate Email" to create your personalized cold email...
+                </div>
+                
+                <div class="button-group">
+                    <button type="button" class="btn btn-primary" id="copyBtn" disabled>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"/>
+                        </svg>
+                        Copy to Clipboard
+                    </button>
+                </div>
+                
+                <div id="successMessage" class="success-message">
+                    ✅ Email copied to clipboard!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Cold Email Writer Class
+        class ColdEmailWriter {
+            constructor() {
+                this.apiKey = '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';
+                this.systemPrompt = `You are an expert cold email writer. Your goal is to craft concise, highly personalized outreach emails for potential clients based on their LinkedIn profile data. The email should follow a tone similar to the example provided—casual, respectful, direct, and value-driven. Each email must show genuine interest in the recipient's work and offer a clear, relevant reason to connect.
+
+**Instructions:**
+1. **Start with a personalized hook** based on something specific from the recipient's LinkedIn profile (e.g. a post they made, a recent achievement, their role, or something notable about their company).
+2. **Briefly introduce the sender** (you can use this template: "I'm [Name]. I run a digital agency that helps Shopify brands speed up sites, improve UX, and recover lost revenue." Or adapt it if needed).
+3. **Provide a relevant insight or value-add**—such as an observation about their site's performance, a UX issue, or a growth opportunity, backed by a stat if possible.
+4. **Acknowledge it's a cold pitch** but express confidence in being helpful.
+5. **End with a clear, low-pressure CTA** asking to schedule a brief chat.
+
+**Style Guidelines:**
+* Use a friendly and conversational tone.
+* Keep the email short (5–7 sentences).
+* Avoid sounding too "salesy" or generic—authenticity matters.
+* Prioritize relevance over formality.`;
+            }
+
+            async generateEmail(linkedinData, senderName = 'Wahab', extraNotes = '', customPrompt = '') {
+                try {
+                    let systemPrompt = this.systemPrompt;
+                    
+                    if (customPrompt.trim()) {
+                        systemPrompt += `\n\nADDITIONAL CUSTOM INSTRUCTIONS:\n${customPrompt}`;
+                    }
+
+                    let userPrompt = `Sender name: ${senderName}\n\nLinkedIn data:\n${linkedinData}`;
+                    
+                    if (extraNotes.trim()) {
+                        userPrompt += `\n\nAdditional Notes/Context:\n${extraNotes}`;
+                    }
+
+                    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${this.apiKey}`,
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            model: 'openai/gpt-4o',
+                            messages: [
+                                { role: 'system', content: systemPrompt },
+                                { role: 'user', content: userPrompt }
+                            ],
+                            max_tokens: 1000,
+                            temperature: 0.7
+                        }),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    return data.choices[0].message.content;
+                    
+                } catch (error) {
+                    console.log('Using demo mode due to API restrictions...');
+                    return this.generateMockEmail(linkedinData, senderName, extraNotes, customPrompt);
+                }
+            }
+
+            generateMockEmail(linkedinData, senderName = 'Wahab', extraNotes = '', customPrompt = '') {
+                const nameMatch = linkedinData.match(/Name:\s*([^\n,]+)/i) || linkedinData.match(/([A-Z][a-z]+\s+[A-Z][a-z]+)/);
+                const name = nameMatch ? nameMatch[1].trim() : 'there';
+                
+                const roleMatch = linkedinData.match(/Role:\s*([^\n,]+)/i) || linkedinData.match(/(CEO|CTO|Director|Manager|Founder)[^\n]*/i);
+                const role = roleMatch ? roleMatch[1].trim() : 'your role';
+                
+                const companyMatch = linkedinData.match(/Company:\s*([^\n,]+)/i);
+                const company = companyMatch ? companyMatch[1].trim() : 'your company';
+
+                // Base email template
+                let baseEmail = `Hey ${name},
+
+I noticed your work as ${role} at ${company} - really impressive what you're building.
+
+I'm ${senderName}. I run a digital agency that helps businesses speed up sites, improve UX, and recover lost revenue.
+
+Based on what I see, there might be some quick wins we could identify for better conversions. Many similar companies see 20-30% improvement with the right optimizations.`;
+
+                // Add extra notes context if provided
+                if (extraNotes.trim()) {
+                    baseEmail += `\n\n${this.incorporateNotes(extraNotes, name, company)}`;
+                }
+
+                // Apply custom prompt modifications
+                if (customPrompt.trim()) {
+                    baseEmail = this.applyCustomPrompt(baseEmail, customPrompt, name, senderName);
+                } else {
+                    baseEmail += `\n\nThis is a cold pitch, but I'm confident I can help.
+
+Worth a quick 10-minute chat to explore? No pressure if it's not a fit.
+
+Best regards,
+${senderName}`;
+                }
+
+                return baseEmail;
+            }
+
+            incorporateNotes(notes, recipientName, company) {
+                // Simple logic to incorporate notes into the email context
+                const lowerNotes = notes.toLowerCase();
+                
+                if (lowerNotes.includes('mobile') || lowerNotes.includes('optimization')) {
+                    return `I noticed you might be particularly interested in mobile optimization - this is often where we see the biggest impact for companies like ${company}.`;
+                } else if (lowerNotes.includes('urgent') || lowerNotes.includes('timing')) {
+                    return `I understand timing might be important for your current initiatives.`;
+                } else if (lowerNotes.includes('conversion') || lowerNotes.includes('sales')) {
+                    return `Given your focus on conversions, I think there are some specific strategies that could work well for ${company}.`;
+                } else {
+                    return `Additionally: ${notes}`;
+                }
+            }
+
+            applyCustomPrompt(baseEmail, customPrompt, recipientName, senderName) {
+                const lowerPrompt = customPrompt.toLowerCase();
+                
+                if (lowerPrompt.includes('formal')) {
+                    return baseEmail + `\n\nI would appreciate the opportunity to discuss how we might assist ${recipientName}'s organization.
+
+Please let me know if you would be available for a brief consultation.
+
+Respectfully,
+${senderName}`;
+                } else if (lowerPrompt.includes('short') || lowerPrompt.includes('brief')) {
+                    const shortEmail = baseEmail.split('\n\n').slice(0, 2).join('\n\n');
+                    return shortEmail + `\n\nInterested in a quick chat?\n\nBest,\n${senderName}`;
+                } else if (lowerPrompt.includes('demo')) {
+                    return baseEmail + `\n\nI'd love to show you a quick demo of what's possible.
+
+Are you free for a 15-minute screen share this week?
+
+Best regards,
+${senderName}`;
+                } else if (lowerPrompt.includes('direct') || lowerPrompt.includes('sales')) {
+                    return baseEmail + `\n\nI can help you increase revenue by 20-30% with proven optimization strategies.
+
+When can we schedule a call to discuss your specific goals?
+
+${senderName}`;
+                } else {
+                    return baseEmail + `\n\n${customPrompt}
+
+This is a cold pitch, but I'm confident I can help.
+
+Worth a quick chat?
+
+Best regards,
+${senderName}`;
+                }
+            }
+        }
+
+        // Initialize the email writer
+        const emailWriter = new ColdEmailWriter();
+        
+        // DOM elements
+        const form = document.getElementById('emailForm');
+        const linkedinDataTextarea = document.getElementById('linkedinData');
+        const extraNotesTextarea = document.getElementById('extraNotes');
+        const customPromptTextarea = document.getElementById('customPrompt');
+        const senderNameInput = document.getElementById('senderName');
+        const generateBtn = document.getElementById('generateBtn');
+        const loadExampleBtn = document.getElementById('loadExampleBtn');
+        const outputContent = document.getElementById('outputContent');
+        const copyBtn = document.getElementById('copyBtn');
+        const successMessage = document.getElementById('successMessage');
+
+        // Example data
+        const exampleData = `Name: Sarah Chen
+Role: E-commerce Director at StyleHub
+Recent Post: Posted about mobile commerce trends and the importance of mobile-first design
+Company: Fashion retailer, 100+ employees
+Website: stylehub.com
+Industry: Fashion/E-commerce
+Recent Achievement: Launched new mobile app that increased conversions by 25%`;
+
+        // Event listeners
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const linkedinData = linkedinDataTextarea.value.trim();
+            const extraNotes = extraNotesTextarea.value.trim();
+            const customPrompt = customPromptTextarea.value.trim();
+            const senderName = senderNameInput.value.trim() || 'Wahab';
+            
+            if (!linkedinData) {
+                alert('Please enter LinkedIn data');
+                return;
+            }
+            
+            // Show loading state
+            generateBtn.disabled = true;
+            outputContent.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Generating personalized email...
+                </div>
+            `;
+            copyBtn.disabled = true;
+            
+            try {
+                const email = await emailWriter.generateEmail(linkedinData, senderName, extraNotes, customPrompt);
+                outputContent.textContent = email;
+                copyBtn.disabled = false;
+            } catch (error) {
+                outputContent.textContent = 'Error generating email. Please try again.';
+                console.error('Error:', error);
+            } finally {
+                generateBtn.disabled = false;
+            }
+        });
+
+        loadExampleBtn.addEventListener('click', () => {
+            linkedinDataTextarea.value = exampleData;
+        });
+
+        copyBtn.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(outputContent.textContent);
+                successMessage.style.display = 'block';
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                }, 3000);
+            } catch (error) {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = outputContent.textContent;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                successMessage.style.display = 'block';
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                }, 3000);
+            }
+        });
+
+        // Auto-resize textareas with max height constraints
+        [linkedinDataTextarea, extraNotesTextarea, customPromptTextarea].forEach(textarea => {
+            textarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                const newHeight = Math.min(this.scrollHeight, parseInt(getComputedStyle(this).maxHeight));
+                this.style.height = newHeight + 'px';
+            });
+        });
+    </script>
+</body>
+</html>
